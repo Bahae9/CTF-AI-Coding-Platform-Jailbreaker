@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Personal context file — never commit (project-local, per my setup)
+CLAUDE.md
+
+# Real secrets (the challenge's *bait* .env is tracked explicitly below)
+/.env
+*.env.local
+.streamlit/secrets.toml
+
+# Generated SQLite DB — rebuilt from the seed in backend/main.py on startup
+challenge/data/*.db
+challenge/data/*.db-*
+
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Keep the intentionally planted bait .env (CTF stage 2 target) tracked,
+# even though secret-like filenames are ignored above.
+!challenge/code_examples/.env

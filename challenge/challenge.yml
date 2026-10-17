@@ -1,0 +1,19 @@
+# Challenge descriptor.
+# Originally built for MCTF 5.0 (MicroClub, USTHB) in the CTFd/MicroClub format;
+# kept here so the challenge can be re-deployed on a CTFd instance.
+challenge:
+  name: "AI System Breaker"
+  author: "Bahae"
+  category: ai
+  difficulty: hard
+  description: "Hack this platform as you are attacking a real startup."
+  flags:
+    - { flag: "learnify{s34rch_l34k__f1l3_3xf1l__gu4rdr41l_byp4ss}", case_sensitive: true }
+  need_deploy: true
+
+deploy:
+  subdomain: "ai-system-breaker"
+  port: 13000
+  dynamic_instances: false
+  tcp: false            # HTTP service
+  noSsl: false

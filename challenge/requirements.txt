@@ -1,0 +1,8 @@
+# Direct dependencies, pinned. Transitive deps (pandas, altair, pyarrow, …) are
+# resolved by pip from these. Regenerate a full lock with `pip freeze` if needed.
+fastapi==0.136.1
+uvicorn==0.46.0
+httpx==0.28.1
+pydantic==2.13.3
+streamlit==1.56.0
+requests==2.33.1
