@@ -1,5 +1,7 @@
 # AI System Breaker — "Learnify"
 
+[![CI](https://github.com/Bahae9/CTF-AI-Coding-Platform-Jailbreaker/actions/workflows/ci.yml/badge.svg)](https://github.com/Bahae9/CTF-AI-Coding-Platform-Jailbreaker/actions/workflows/ci.yml)
+
 An intentionally vulnerable **AI-security CTF challenge**. It presents *Learnify*, a realistic
 e-learning startup whose three LLM-powered features each leak one fragment of a flag through a
 different class of prompt-injection / jailbreak vulnerability. Join the three fragments to recover
@@ -102,15 +104,25 @@ Validated by building and running the stack and driving the live API with a real
 
 - Public endpoints, the seeded database, and the frontend load correctly.
 - **Stage 1** and **Stage 2** were solved end-to-end against live `gemini-2.5-flash`.
-- **Stage 3**'s guardrail was confirmed to block naive extraction; a full solve requires an
-  encoding that evades the judge (see [the writeup](solution/writeup.md)). `gemini-2.5-flash` is
-  notably robust, so stage 3 is the hardest stage by design.
+- **Stage 3**'s guardrail was confirmed to block naive extraction. The secret is reachable (Lia emits
+  it before the guardrail), but current `gemini-2.5-flash` is robust enough that the common
+  judge-evasion encodings are caught — a full stage-3 solve was **not** captured in this run. See the
+  [writeup](solution/writeup.md) and [MAINTAINERS.md](MAINTAINERS.md) for the approach and difficulty
+  tuning.
+
+Offline consistency tests (flag ↔ fragment encodings ↔ source files, plus syntax checks) run without
+Docker or network:
+
+```bash
+python -m unittest discover -s tests -v
+```
 
 ## Repository layout
 
 ```
 .
 ├── docker-compose.yml        # one-command run (localhost by default)
+├── MAINTAINERS.md            # intentional-vuln inventory + difficulty tuning
 ├── challenge/
 │   ├── Dockerfile            # non-root image, shared by both services
 │   ├── requirements.txt      # pinned direct dependencies
@@ -120,6 +132,8 @@ Validated by building and running the stack and driving the live API with a real
 │   ├── code_examples/        # reviewer "reference" context (incl. the bait .env)
 │   ├── nginx/                # gateway config
 │   └── data/                 # SQLite DB is generated here at startup (gitignored)
+├── tests/                    # offline consistency tests (stdlib only)
+├── .github/workflows/        # CI: run tests + build the image
 └── solution/
     └── writeup.md            # spoilers: full solution + the flag
 ```
