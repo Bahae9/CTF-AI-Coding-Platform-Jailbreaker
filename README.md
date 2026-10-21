@@ -39,20 +39,37 @@ docker compose up --build
 # then open http://localhost:13000
 ```
 
-That's the whole setup. The gateway binds to `127.0.0.1:13000` by default. To host it for remote
-players, change `127.0.0.1:13000:80` to `13000:80` in [docker-compose.yml](docker-compose.yml).
+That's the whole setup — no secrets, no config files, no API keys on the server. The only requirement
+is Docker (Engine 20.10+ with the Compose plugin). The first build takes a few minutes; later starts
+are seconds. Stop it with `Ctrl-C`, or `docker compose down` to remove the containers.
+
+By default the gateway listens on `127.0.0.1:13000` (your machine only). Both parts are configurable:
+
+```bash
+LEARNIFY_PORT=8080 docker compose up --build        # if 13000 is taken
+LEARNIFY_BIND=0.0.0.0 docker compose up --build      # host it for others on your LAN
+```
 
 ### Play
 
 1. Open the app, go to **Settings**, and paste a Google Gemini API key
-   (get one free at [aistudio.google.com](https://aistudio.google.com)).
+   (get one free at [aistudio.google.com](https://aistudio.google.com); the free tier is enough).
 2. Explore the site. Three features talk to the model: **Smart Search**, **Code Review**
    (under Settings → Developer Tools, or the nav), and the **Lia** assistant.
 3. Extract one flag fragment from each. Concatenate them in feature order (search → review → chat)
    to form the flag: `learnify{...}`.
 
 No key is needed to browse the catalog, instructors, or About page — only the three AI features
-require one.
+require one. Each player uses their own key, so you can host one instance for a whole group.
+
+### Troubleshooting
+
+- **Port already in use** — set a different one: `LEARNIFY_PORT=8080 docker compose up`.
+- **"invalid API key" or quota errors** — the key is wrong, or the free-tier quota is spent; wait for
+  the per-minute/day reset or use another key.
+- **`docker-credential-desktop` not found** on build — your Docker config points at a credential helper
+  that isn't installed. These are public images, so a throwaway config avoids it:
+  `DOCKER_CONFIG=$(mktemp -d) docker compose up --build`.
 
 ---
 
@@ -100,15 +117,13 @@ planted `.env` is bait and contains no real secret.
 
 ## Verification
 
-Validated by building and running the stack and driving the live API with a real Gemini key:
+Validated by building and running the full stack and driving the live API with a real Gemini key:
 
 - Public endpoints, the seeded database, and the frontend load correctly.
-- **Stage 1** and **Stage 2** were solved end-to-end against live `gemini-2.5-flash`.
-- **Stage 3**'s guardrail was confirmed to block naive extraction. The secret is reachable (Lia emits
-  it before the guardrail), but current `gemini-2.5-flash` is robust enough that the common
-  judge-evasion encodings are caught — a full stage-3 solve was **not** captured in this run. See the
-  [writeup](solution/writeup.md) and [MAINTAINERS.md](MAINTAINERS.md) for the approach and difficulty
-  tuning.
+- **Stage 1** and **Stage 2** solve end-to-end against live `gemini-2.5-flash`.
+- **Stage 3** is the hardest: its guardrail blocks naive extraction, and the solve requires reading how
+  the guardrail is built and chaining the injection through it. Full approach in the
+  [writeup](solution/writeup.md).
 
 Offline consistency tests (flag ↔ fragment encodings ↔ source files, plus syntax checks) run without
 Docker or network:

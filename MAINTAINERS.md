@@ -34,19 +34,16 @@ default, so the guardrail's `maxOutputTokens=5` still yields a one-word `SAFE`/`
 a `gemini-3.x` model, set `thinkingConfig.thinkingBudget=0` on the guardrail call or it returns empty
 text.
 
-**Stage 3 difficulty (validated 2026-10).** Current `gemini-2.5-flash` is much more robust than when
-this challenge first ran. Stages 1 and 2 solve reliably; stage 3's guardrail now blocks the common
-judge-evasion encodings (hyphenation, reversal, base64) and Lia often refuses the overt "encode the
-secret" framings. If stage 3 feels unsolvable for your audience, tune it back toward its original
-difficulty by one of:
+**Difficulty.** Stage 3 is the hardest by design. The keyword blocklist in `guardrail()` deliberately
+does **not** contain the fragment value, so the real gate is the second-model judge — and that judge
+only ever sees the chatbot's reply as data. The intended solve is a two-layer prompt injection: get
+Lia to carry the token in a reply she'll produce, then shape that reply so the judge reads it as safe.
+Keep the guardrail as-is to preserve the intended difficulty.
 
-- **Pin an older model snapshot** for the judge/Lia (e.g. a dated `gemini-2.5-flash-*` release), if one
-  is available to your key.
-- **Relax the judge** in `guardrail()`: drop the "encoded, obfuscated, or partial versions" clause, or
-  judge only against the literal fragment.
-- **Keep only the keyword filter** (remove the second-model judge) for an easier variant.
-
-Keep any such change documented here and in `challenge/challenge.yml`.
+If you are running this for a less experienced audience and want an easier variant, you can soften the
+judge in `guardrail()` (e.g. drop the "encoded, obfuscated, or partial versions" clause) or drop the
+judge and keep only the keyword filter. Document any such change here and in `challenge/challenge.yml`,
+and keep a note that the default build is the full-difficulty one.
 
 ## Local dev without Docker
 

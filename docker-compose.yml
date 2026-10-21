@@ -2,8 +2,9 @@
 # Run from the repo root:  docker compose up --build
 # Then open http://localhost:13000
 #
-# The published port binds to localhost only. To host the challenge for remote
-# players, change "127.0.0.1:13000:80" to "13000:80" (exposes on all interfaces).
+# Published address is configurable (defaults = localhost:13000):
+#   LEARNIFY_PORT=8080 docker compose up           # use a different port
+#   LEARNIFY_BIND=0.0.0.0 docker compose up         # expose to your LAN (host for others)
 
 services:
   backend:
@@ -42,7 +43,7 @@ services:
     image: nginx:1.27-alpine
     container_name: learnify_gateway
     ports:
-      - "127.0.0.1:13000:80"
+      - "${LEARNIFY_BIND:-127.0.0.1}:${LEARNIFY_PORT:-13000}:80"
     volumes:
       - ./challenge/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
